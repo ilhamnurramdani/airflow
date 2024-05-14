@@ -1,5 +1,6 @@
 import datetime
 from airflow import DAG
+from airflow.operators.empty import EmptyOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 with DAG(
@@ -29,6 +30,8 @@ with DAG(
         sql="sql/insert_pet.sql",  # Path to your SQL file containing INSERT statements
         postgres_conn_id='postgres_default',  # Replace with your PostgreSQL connection ID
     )
+    start = EmptyOperator(task_id = 'start')
+    end = EmptyOperator(task_id = 'end')
 
 # Set up task dependencies
-create_pet_table >> populate_pet_table
+start >> create_pet_table >> populate_pet_table >> end

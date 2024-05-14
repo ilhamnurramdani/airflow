@@ -1,5 +1,6 @@
 from datetime import datetime
 from airflow import DAG
+from airflow.operators.empty import EmptyOperator
 from airflow.providers.mysql.operators.mysql import MySqlOperator
 
 with DAG(
@@ -19,5 +20,8 @@ with DAG(
         mysql_conn_id='mysql_conn',
         sql="INSERT INTO students (name) VALUES ('Alex Jones');",
     )
+    
+    start = EmptyOperator(task_id = 'start')
+    end = EmptyOperator(task_id = 'end')
 
-create_new_table >> insert_data
+start >> create_new_table >> insert_data >>  end
